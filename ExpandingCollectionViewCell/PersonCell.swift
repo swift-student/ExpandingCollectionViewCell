@@ -95,9 +95,11 @@ class PersonCell: UICollectionViewCell {
             rootStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
         ])
         
+        // We need constraints that define the height of the cell when closed and when open
+        // to allow for animating between the two states.
         closedConstraint =
             nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
-        closedConstraint?.priority = .defaultLow
+        closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
         
         openConstraint =
             favoriteMovieLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
@@ -118,7 +120,7 @@ class PersonCell: UICollectionViewCell {
         openConstraint?.isActive = isSelected
         
         UIView.animate(withDuration: 0.3) {
-            // set the rotation just under 180º so that it rotates back the same way
+            // Set the rotation just under 180º so that it rotates back the same way
             let upsideDown = CGAffineTransform(rotationAngle: .pi * 0.999 )
             self.disclosureIndicator.transform = self.isSelected ? upsideDown :.identity
         }
