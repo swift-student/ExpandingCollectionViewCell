@@ -1,3 +1,5 @@
+[![Platform](https://img.shields.io/badge/platform-iOS%2013.0-lightgrey)](https://developer.apple.com) [![Swift Version](https://img.shields.io/badge/swift-5.2-orange.svg)](https://swift.org/)
+
 # Expanding Collection View Cell
 
 This is a sample project demonstrating how to set up a collection view cell and collection view controller to allow the cells to animate open and closed. The technique used here could also be used to do any number of other animations in the cell upon selection. The process is quite simple once you know how to do it, but can be a bit tricky trying to figure it out the first time around.
