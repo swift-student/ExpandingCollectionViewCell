@@ -13,16 +13,11 @@ class PersonCell: UICollectionViewCell {
     // MARK: - Public Properties
     
     var person: Person? { didSet { updateContent() } }
-    
-    override var isSelected: Bool {
-        didSet {
-            updateViews()
-        }
-    }
+    override var isSelected: Bool { didSet { updateLayout() } }
     
     // MARK: - Private Properties
     
-    // Labels
+    // Views
     private let nameLabel: UILabel = {
         let nameLabel = UILabel()
         nameLabel.font = .preferredFont(forTextStyle: .headline)
@@ -47,7 +42,6 @@ class PersonCell: UICollectionViewCell {
         rootStack.distribution = .fillProportionally
         return rootStack
     }()
-        
     private lazy var labelStack: UIStackView = {
         let labelStack = UIStackView(arrangedSubviews: [
             nameLabel,
@@ -91,7 +85,7 @@ class PersonCell: UICollectionViewCell {
         rootStack.translatesAutoresizingMaskIntoConstraints = false
         
         setUpConstraints()
-        updateViews()
+        updateLayout()
     }
     
     private func setUpConstraints() {
@@ -101,11 +95,12 @@ class PersonCell: UICollectionViewCell {
             rootStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
         ])
         
-        closedConstraint = nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor,
-                                                             constant: -padding)
+        closedConstraint =
+            nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
         closedConstraint?.priority = .defaultLow
-        openConstraint = favoriteMovieLabel.bottomAnchor.constraint(equalTo: bottomAnchor,
-                                                                    constant: -padding)
+        
+        openConstraint =
+            favoriteMovieLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
         openConstraint?.priority = .defaultLow
     }
 
@@ -117,7 +112,8 @@ class PersonCell: UICollectionViewCell {
         favoriteMovieLabel.text = "Favorite movie: \(person.favoriteMovie)"
     }
     
-    private func updateViews() {
+    /// Updates the views to reflect changes in selection
+    private func updateLayout() {
         closedConstraint?.isActive = !isSelected
         openConstraint?.isActive = isSelected
         

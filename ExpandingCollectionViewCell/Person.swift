@@ -16,6 +16,7 @@ struct Person {
     let id = UUID()
 }
 
+// Person must be hashable in order to be used as the item identifier in a diffable data source
 extension Person: Hashable {
     static func == (lhs: Person, rhs: Person) -> Bool {
         lhs.id == rhs.id

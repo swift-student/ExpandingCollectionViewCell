@@ -39,6 +39,7 @@ class PeopleViewController: UIViewController {
     // MARK: - Private Methods
     
     private func createLayout() -> UICollectionViewLayout {
+        // The item and group will share this size to allow for automatic sizing of the cell's height
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                              heightDimension: .estimated(50))
         
@@ -80,7 +81,6 @@ class PeopleViewController: UIViewController {
             cell.person = person
             return cell
         }
-        
         collectionView.dataSource = dataSource
         
         var snapshot = NSDiffableDataSourceSnapshot<Section, Person>()
@@ -98,7 +98,7 @@ extension PeopleViewController: UICollectionViewDelegate {
 
         let cell = collectionView.cellForItem(at: indexPath)
 
-        if cell?.isSelected ?? false {
+        if cell?.isSelected ?? false { // Allows for closing an already open cell
             collectionView.deselectItem(at: indexPath, animated: true)
         } else {
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
@@ -106,13 +106,16 @@ extension PeopleViewController: UICollectionViewDelegate {
         
         dataSource.refresh()
         
-        return false
+        return false // The selecting or deselecting is already performed above
     }
 }
 
 extension UICollectionViewDiffableDataSource {
-    func refresh(animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
-        self.apply(self.snapshot(), animatingDifferences: animatingDifferences, completion: completion)
+    /// Reapplies the current snapshot to the data source, animating the differences.
+    /// - Parameters:
+    ///   - completion: A closure to be called on completion of reapplying the snapshot.
+    func refresh(completion: (() -> Void)? = nil) {
+        self.apply(self.snapshot(), animatingDifferences: true, completion: completion)
     }
 }
 
