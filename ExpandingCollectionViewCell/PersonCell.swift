@@ -13,7 +13,7 @@ class PersonCell: UICollectionViewCell {
     // MARK: - Public Properties
     
     var person: Person? { didSet { updateContent() } }
-    override var isSelected: Bool { didSet { updateLayout() } }
+    override var isSelected: Bool { didSet { updateAppearance() } }
     
     // MARK: - Private Properties
     
@@ -85,7 +85,7 @@ class PersonCell: UICollectionViewCell {
         rootStack.translatesAutoresizingMaskIntoConstraints = false
         
         setUpConstraints()
-        updateLayout()
+        updateAppearance()
     }
     
     private func setUpConstraints() {
@@ -115,7 +115,7 @@ class PersonCell: UICollectionViewCell {
     }
     
     /// Updates the views to reflect changes in selection
-    private func updateLayout() {
+    private func updateAppearance() {
         closedConstraint?.isActive = !isSelected
         openConstraint?.isActive = isSelected
         
