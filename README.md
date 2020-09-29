@@ -4,17 +4,13 @@ This is a sample project demonstrating how to set up a collection view cell and 
 
 This project is set up using a diffable data source and compositional layout for the collection view. However, I will add a branch shortly that will show how to get the same result using a traditional data source and flow layout. 
 
-------
-
 # Demo
 
 ![Demo](Demo.gif)
 
-------
-
 # Key Points
 
-## Cell
+### Cell
 
 When setting up your constraints, create properties for any constraints that need to be modified or activated/deactivated in order to open or close the cell:
 
@@ -67,7 +63,7 @@ private func updateAppearance() {
 }
 ```
 
-## Collection View Layout
+### Collection View Layout
 
 When creating a `UICollectionViewCompositionalLayout`, use an estimated dimension for any dimensions that you want to be defined by the cell. Do so in both the item and group size. An easy way to do this is to use one size for both of them:
 
@@ -82,7 +78,7 @@ let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize,
                                                  subitems: [item])
 ```
 
-## Collection View Delegate
+### Collection View Delegate
 
 In order to support deselecting the currently selected cell, implement `shouldSelectItemAt` instead of `didSelectItemAt`. Then in this method, manually select or deselect the cell. After doing so, refresh the data source by reapplying the current snapshot:
 
