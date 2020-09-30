@@ -27,8 +27,8 @@ To allow the width to be set externally, create a public variable that, when set
 ``` sw
 var width: CGFloat? {
     didSet {
-        guard let maxWidth = width else { return }
-        widthConstraint?.constant = maxWidth
+        guard let width = width else { return }
+        widthConstraint?.constant = width
         widthConstraint?.isActive = true
     }
 }

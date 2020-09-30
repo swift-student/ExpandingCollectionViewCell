@@ -17,8 +17,8 @@ class PersonCell: UICollectionViewCell {
     /// Use this property to set the width of the cell in `cellForItemAt`.
     var width: CGFloat? {
         didSet {
-            guard let maxWidth = width else { return }
-            widthConstraint?.constant = maxWidth
+            guard let width = width else { return }
+            widthConstraint?.constant = width
             widthConstraint?.isActive = true
         }
     }
