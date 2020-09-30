@@ -81,7 +81,8 @@ class PersonCell: UICollectionViewCell {
         clipsToBounds = true
         layer.cornerRadius = cornerRadius
 
-        addSubview(rootStack)
+        contentView.addSubview(rootStack)
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         rootStack.translatesAutoresizingMaskIntoConstraints = false
         
         setUpConstraints()
@@ -90,19 +91,23 @@ class PersonCell: UICollectionViewCell {
     
     private func setUpConstraints() {
         NSLayoutConstraint.activate([
-            rootStack.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            rootStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
-            rootStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            contentView.topAnchor.constraint(equalTo: topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            rootStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            rootStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
         ])
         
         // We need constraints that define the height of the cell when closed and when open
         // to allow for animating between the two states.
         closedConstraint =
-            nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
+            nameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
         
         openConstraint =
-            favoriteMovieLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
+            favoriteMovieLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         openConstraint?.priority = .defaultLow
     }
 
