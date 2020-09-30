@@ -93,7 +93,8 @@ class PeopleViewController: UIViewController {
 // MARK: - Collection View Delegate
 
 extension PeopleViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+    func collectionView(_ collectionView: UICollectionView,
+                        shouldSelectItemAt indexPath: IndexPath) -> Bool {
         guard let dataSource = dataSource else { return false }
         
         // Allows for closing an already open cell
