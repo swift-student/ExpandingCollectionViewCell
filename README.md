@@ -4,7 +4,7 @@
 
 This is a sample project demonstrating how to set up a collection view cell and collection view controller to allow the cells to animate open and closed. The technique used here could also be used to do any number of other animations in the cell upon selection. The process is quite simple once you know how to do it, but can be a bit tricky trying to figure it out the first time around.
 
-This project is set up using a diffable data source and compositional layout for the collection view on the master branch. However, you can also [check out a branch here](https://github.com/swift-student/ExpandingCollectionViewCell/tree/traditional-data-source-flow-layout) that uses a traditional collection view data source and flow layout.
+The branch you are viewing is set up to use a traditional collection view data source and flow layout. However, you can also [check out the master branch here](https://github.com/swift-student/ExpandingCollectionViewCell/tree/master) that uses a diffable data source and compositional layout for the collection view.
 
 # Demo
 
@@ -14,12 +14,27 @@ This project is set up using a diffable data source and compositional layout for
 
 ### Cell
 
-When setting up your constraints, create properties for any constraints that need to be modified or activated/deactivated in order to open or close the cell:
+When setting up your constraints, create properties for any constraints that need to be modified or activated/deactivated in order to open or close the cell, as well as a width constraint to allow the width to be set by the collection view controller.
 
 ``` swift
 private var closedConstraint: NSLayoutConstraint?
 private var openConstraint: NSLayoutConstraint?
+private var widthConstraint: NSLayoutConstraint?
 ```
+
+To allow the width to be set externally, create a public variable that, when set, activates the width constraint and sets it's constant:
+
+``` sw
+var width: CGFloat? {
+    didSet {
+        guard let maxWidth = width else { return }
+        widthConstraint?.constant = maxWidth
+        widthConstraint?.isActive = true
+    }
+}
+```
+
+
 
 Then take care to set up your constraints so that they properly define the height of your cell, and use priority to make sure your content stays where you want it when the cell expands and contracts:
 
@@ -33,6 +48,10 @@ NSLayoutConstraint.activate([
     rootStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
     rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
 ])
+
+// Create a constraint for the width, which will be updated and activated by setting `width`
+widthConstraint = contentView.widthAnchor.constraint(equalToConstant: 100)
+widthConstraint?.priority = .required
 
 // We need constraints that define the height of the cell when closed and when open
 // to allow for animating between the two states.
@@ -51,8 +70,6 @@ Also, don't forget to set those `translatesAutoresizingMasksIntoConstraints` to 
 contentView.translatesAutoresizingMaskIntoConstraints = false
 rootStack.translatesAutoresizingMaskIntoConstraints = false
 ```
-
-
 
 In order to modify the cell's appearance when it is selected or deselected, use a `didSet` on the `isSelected` property of the cell to call an update method:
 
@@ -78,28 +95,20 @@ private func updateAppearance() {
 
 ### Collection View Layout
 
-When creating a `UICollectionViewCompositionalLayout`, use an estimated dimension for any dimensions that you want to be defined by the cell. Do so in both the item and group size. An easy way to do this is to use one size for both of them:
+Set up your flow layout to use automatic sizing via the `estimatedItemSize` property:
 
 ``` swift
-// The item and group will share this size to allow for automatic sizing of the cell's height
-let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                     heightDimension: .estimated(50))
-
-let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize,
-                                                 subitems: [item])
+flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
 ```
 
 ### Collection View Delegate
 
-In order to support deselecting the currently selected cell, implement `shouldSelectItemAt` instead of `didSelectItemAt`. Then in this method, manually select or deselect the cell. After doing so, refresh the data source by reapplying the current snapshot:
+In order to support deselecting the currently selected cell, implement `shouldSelectItemAt` instead of `didSelectItemAt`. Then in this method, manually select or deselect the cell. After doing so, let the collectionView animate the changes to the cell size by simply calling `performBatchUpdates` with `nil`:
 
 ``` swift
 extension PeopleViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        guard let dataSource = dataSource else { return false }
         
         // Allows for closing an already open cell
         if collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false {
@@ -108,18 +117,9 @@ extension PeopleViewController: UICollectionViewDelegate {
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         }
         
-        dataSource.refresh()
+        collectionView.performBatchUpdates(nil)
         
         return false // The selecting or deselecting is already performed above
-    }
-}
-
-extension UICollectionViewDiffableDataSource {
-    /// Reapplies the current snapshot to the data source, animating the differences.
-    /// - Parameters:
-    ///   - completion: A closure to be called on completion of reapplying the snapshot.
-    func refresh(completion: (() -> Void)? = nil) {
-        self.apply(self.snapshot(), animatingDifferences: true, completion: completion)
     }
 }
 ```
