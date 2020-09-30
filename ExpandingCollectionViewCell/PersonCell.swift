@@ -14,6 +14,14 @@ class PersonCell: UICollectionViewCell {
     
     var person: Person? { didSet { updateContent() } }
     override var isSelected: Bool { didSet { updateAppearance() } }
+    /// Use this property to set the width of the cell in `cellForItemAt`.
+    var width: CGFloat? {
+        didSet {
+            guard let maxWidth = width else { return }
+            widthConstraint?.constant = maxWidth
+            widthConstraint?.isActive = true
+        }
+    }
     
     // MARK: - Private Properties
     
@@ -57,6 +65,7 @@ class PersonCell: UICollectionViewCell {
     // Constraints
     private var closedConstraint: NSLayoutConstraint?
     private var openConstraint: NSLayoutConstraint?
+    private var widthConstraint: NSLayoutConstraint?
     
     // Layout
     private let padding: CGFloat = 8
@@ -80,8 +89,9 @@ class PersonCell: UICollectionViewCell {
         backgroundColor = .systemGray6
         clipsToBounds = true
         layer.cornerRadius = cornerRadius
-
-        addSubview(rootStack)
+        
+        contentView.addSubview(rootStack)
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         rootStack.translatesAutoresizingMaskIntoConstraints = false
         
         setUpConstraints()
@@ -90,10 +100,18 @@ class PersonCell: UICollectionViewCell {
     
     private func setUpConstraints() {
         NSLayoutConstraint.activate([
-            rootStack.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            rootStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
-            rootStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            contentView.topAnchor.constraint(equalTo: topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            rootStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            rootStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
         ])
+        
+        // Create a constraint for the width, which will be updated and activated by setting `maxWidth`
+        widthConstraint = contentView.widthAnchor.constraint(equalToConstant: 100)
+        widthConstraint?.priority = .required
         
         // We need constraints that define the height of the cell when closed and when open
         // to allow for animating between the two states.

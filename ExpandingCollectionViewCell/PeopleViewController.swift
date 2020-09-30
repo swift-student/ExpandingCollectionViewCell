@@ -22,7 +22,8 @@ class PeopleViewController: UIViewController {
         Person(name: "Susan", age: 23, favoriteColor: "Teal", favoriteMovie: "The Lion King"),
     ]
     
-    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+    private let flowLayout = UICollectionViewFlowLayout()
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
     
     private let padding: CGFloat = 12
     
@@ -31,27 +32,16 @@ class PeopleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpCollectionView()
+        setUpLayout()
         collectionView.dataSource = self
         collectionView.delegate = self
     }
     
     // MARK: - Private Methods
     
-    private func createLayout() -> UICollectionViewLayout {
-        // The item and group will share this size to allow for automatic sizing of the cell's height
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                             heightDimension: .estimated(50))
-        
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-      
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize,
-                                                         subitems: [item])
-
-        let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = padding
-        section.contentInsets = .init(top: padding, leading: padding, bottom: padding, trailing: padding)
-        
-        return UICollectionViewCompositionalLayout(section: section)
+    private func setUpLayout() {
+        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        flowLayout.minimumLineSpacing = padding
     }
     
     private func setUpCollectionView() {
@@ -78,7 +68,7 @@ extension PeopleViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionNumber: Int) -> Int {
         guard let section = Section(rawValue: sectionNumber) else { return 0 }
         
-        switch section {
+        switch section { // using a switch and Section enum for future expandability
         case .main:
             return people.count
         }
@@ -91,6 +81,7 @@ extension PeopleViewController: UICollectionViewDataSource {
                 fatalError("Could not cast cell as \(PersonCell.self)")
         }
         cell.person = people[indexPath.item]
+        cell.width = collectionView.bounds.width - padding * 2
         return cell
     }
 }
