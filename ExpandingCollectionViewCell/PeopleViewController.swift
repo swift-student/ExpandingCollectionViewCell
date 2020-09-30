@@ -91,6 +91,8 @@ extension PeopleViewController: UICollectionViewDataSource {
 extension PeopleViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        
+        // Allows for closing an already open cell
         if collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false {
             collectionView.deselectItem(at: indexPath, animated: true)
         } else {

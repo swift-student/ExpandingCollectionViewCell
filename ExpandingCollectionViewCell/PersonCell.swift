@@ -116,11 +116,11 @@ class PersonCell: UICollectionViewCell {
         // We need constraints that define the height of the cell when closed and when open
         // to allow for animating between the two states.
         closedConstraint =
-            nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
+            nameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
         
         openConstraint =
-            favoriteMovieLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
+            favoriteMovieLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         openConstraint?.priority = .defaultLow
     }
 
