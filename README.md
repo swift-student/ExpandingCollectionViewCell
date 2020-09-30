@@ -4,7 +4,7 @@
 
 This is a sample project demonstrating how to set up a collection view cell and collection view controller to allow the cells to animate open and closed. The technique used here could also be used to do any number of other animations in the cell upon selection. The process is quite simple once you know how to do it, but can be a bit tricky trying to figure it out the first time around.
 
-This project is set up using a diffable data source and compositional layout for the collection view. However, I will add a branch shortly that will show how to get the same result using a traditional data source and flow layout. 
+This project is set up using a diffable data source and compositional layout for the collection view on the master branch. However, you can also [check out a branch here](https://github.com/swift-student/ExpandingCollectionViewCell/tree/traditional-data-source-flow-layout) that uses a traditional collection view data source and flow layout.
 
 # Demo
 
