@@ -25,20 +25,31 @@ Then take care to set up your constraints so that they properly define the heigh
 
 ``` swift
 NSLayoutConstraint.activate([
-    rootStack.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-    rootStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
-    rootStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+    contentView.topAnchor.constraint(equalTo: topAnchor),
+    contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
+    contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+    contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
+    rootStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+    rootStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+    rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
 ])
 
 // We need constraints that define the height of the cell when closed and when open
 // to allow for animating between the two states.
 closedConstraint =
-    nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
+    nameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
 closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
 
 openConstraint =
-    favoriteMovieLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
+    favoriteMovieLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
 openConstraint?.priority = .defaultLow
+```
+
+Also, don't forget to set those `translatesAutoresizingMasksIntoConstraints` to false:
+
+``` swift
+contentView.translatesAutoresizingMaskIntoConstraints = false
+rootStack.translatesAutoresizingMaskIntoConstraints = false
 ```
 
 
@@ -86,12 +97,12 @@ In order to support deselecting the currently selected cell, implement `shouldSe
 
 ``` swift
 extension PeopleViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+    func collectionView(_ collectionView: UICollectionView,
+                        shouldSelectItemAt indexPath: IndexPath) -> Bool {
         guard let dataSource = dataSource else { return false }
-
-        let cell = collectionView.cellForItem(at: indexPath)
-
-        if cell?.isSelected ?? false { // Allows for closing an already open cell
+        
+        // Allows for closing an already open cell
+        if collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false {
             collectionView.deselectItem(at: indexPath, animated: true)
         } else {
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
