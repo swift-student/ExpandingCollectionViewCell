@@ -109,7 +109,7 @@ class PersonCell: UICollectionViewCell {
             rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
         ])
         
-        // Create a constraint for the width, which will be updated and activated by setting `maxWidth`
+        // Create a constraint for the width, which will be updated and activated by setting `width`
         widthConstraint = contentView.widthAnchor.constraint(equalToConstant: 100)
         widthConstraint?.priority = .required
         
