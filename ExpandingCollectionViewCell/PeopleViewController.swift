@@ -10,7 +10,7 @@ import SwiftUI
 import UIKit
 
 class PeopleViewController: UIViewController {
-    enum Section {
+    enum Section: Int, CaseIterable {
         case main
     }
     
@@ -23,7 +23,6 @@ class PeopleViewController: UIViewController {
     ]
     
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Person>?
     
     private let padding: CGFloat = 12
     
@@ -32,7 +31,7 @@ class PeopleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpCollectionView()
-        setUpDataSource()
+        collectionView.dataSource = self
         collectionView.delegate = self
     }
     
@@ -69,42 +68,45 @@ class PeopleViewController: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
     }
+}
+
+extension PeopleViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        Section.allCases.count
+    }
     
-    private func setUpDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, Person>(collectionView: collectionView) {
-            (collectionView, indexPath, person) -> UICollectionViewCell? in
-            guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: String(describing: PersonCell.self),
-                for: indexPath) as? PersonCell else {
-                    fatalError("Could not cast cell as \(PersonCell.self)")
-            }
-            cell.person = person
-            return cell
-        }
-        collectionView.dataSource = dataSource
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionNumber: Int) -> Int {
+        guard let section = Section(rawValue: sectionNumber) else { return 0 }
         
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Person>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(people)
-        dataSource?.apply(snapshot)
+        switch section {
+        case .main:
+            return people.count
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: String(describing: PersonCell.self),
+            for: indexPath) as? PersonCell else {
+                fatalError("Could not cast cell as \(PersonCell.self)")
+        }
+        cell.person = people[indexPath.item]
+        return cell
     }
 }
 
 // MARK: - Collection View Delegate
 
 extension PeopleViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        guard let dataSource = dataSource else { return false }
-
-        let cell = collectionView.cellForItem(at: indexPath)
-
-        if cell?.isSelected ?? false { // Allows for closing an already open cell
+    func collectionView(_ collectionView: UICollectionView,
+                        shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        if collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false {
             collectionView.deselectItem(at: indexPath, animated: true)
         } else {
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         }
         
-        dataSource.refresh()
+        collectionView.performBatchUpdates(nil)
         
         return false // The selecting or deselecting is already performed above
     }
